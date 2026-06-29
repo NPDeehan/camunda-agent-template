@@ -6,9 +6,9 @@ This is a **ready-to-deploy starter template** for building a conversational AI 
 
 The template ships with:
 
-- A **Camunda Tasklist** interface for submitting requests and viewing responses.
 - Built-in BPMN-native abilities to **wait for a user reply** or **pause for a period of time** before continuing — no custom code required.
 - An **AI agent** backed by Claude Sonnet 4.6 on AWS Bedrock, wired up inside an ad-hoc sub-process.
+- **Automatic discovery** — once deployed with the correct version tag, the agent is visible to the [Camunda Agent Routing Process](https://github.com/NPDeehan/Camunda-Agent-Routing-Process) and can be called by users immediately.
 
 You replace the sample domain logic with your own, keep what you need, and delete the rest.
 
@@ -16,13 +16,18 @@ You replace the sample domain logic with your own, keep what you need, and delet
 
 ## How it works
 
-A user submits a request via Camunda Tasklist. The AI agent runs inside a BPMN ad-hoc sub-process and can call a set of **tools** — BPMN elements (service tasks, script tasks, timer events) that the agent chooses at runtime. The agent sends its answer back through the process, then waits for a follow-up reply before looping or finishing.
+This template does not handle Slack communication directly — that is the responsibility of the **[Camunda Agent Routing Process](https://github.com/NPDeehan/Camunda-Agent-Routing-Process)**, a separate process that must be deployed on the same cluster. The routing agent listens for Slack `@mentions`, discovers available agents by scanning deployed processes for the `AGENT` version tag convention, and calls the right one as a child process. All Slack messaging flows through it.
+
+Your agent communicates with the user by publishing a `MESSAGE_FOR_USER` BPMN message. The routing agent catches this, posts it to the Slack thread, waits for the user's reply, and sends it back as a `SendResponse` message. This means your process never touches Slack directly — you just send and receive BPMN messages.
 
 ```
-User submits request via Tasklist
+User @mentions routing bot in Slack
         │
         ▼
-Start event fires process instance
+Routing agent discovers agents (scans for AGENT in version tags)
+        │
+        ▼
+Routing agent calls your process as a child, passing the user's question
         │
         ▼
 ┌───────────────────────────────────────────┐
@@ -30,15 +35,18 @@ Start event fires process instance
 │  Model: Claude Sonnet 4.6 on Bedrock      │
 │                                           │
 │  Available tools:                         │
-│  ├─ Create and send a message             │
+│  ├─ Send message to user (via routing)    │
 │  ├─ Get current time / date               │
 │  └─ Wait for a set duration              │
 └───────────────────────────────────────────┘
         │
         ▼
-Agent sends reply → process waits for follow-up response
+Agent publishes MESSAGE_FOR_USER
         │
-        ├─ User responds → agent loops with follow-up
+        ▼
+Routing agent posts to Slack thread → waits for reply → returns SendResponse
+        │
+        ├─ User replies → agent loops with follow-up
         └─ Timeout → process ends
 ```
 
@@ -52,6 +60,8 @@ Before starting you will need:
   Sign up at [camunda.com](https://camunda.com) if you do not have one. (If you're a Camundi, you don't need to do this — we already have a cluster for you and you can ask to be invited.)
 - An **AWS account** with Amazon Bedrock enabled and access to the model `us.anthropic.claude-sonnet-4-6` in your chosen region.
   *(May not be needed if you are using a Camunda-provided development cluster — see Step 5.)*
+- The **[Camunda Agent Routing Process](https://github.com/NPDeehan/Camunda-Agent-Routing-Process)** deployed on the same cluster — this handles all Slack communication and agent discovery on behalf of your agent.
+  🤖 If you're a Camundi building on the shared development cluster, this is already running. You don't need to set it up.
 
 ---
 
@@ -77,7 +87,7 @@ If two people deploy this template to the same cluster with the default ID `Camu
 
 ### 2b. Update the Version Tag
 
-The **Version Tag** identifies what this agent does. It must start with `AGENT` followed by a short sentence explaining the agent's goal.
+The **Version Tag** serves two purposes: it tells users what your agent does, and it is how the routing agent discovers your process. The routing agent queries all deployed processes on the cluster and surfaces any whose version tag contains the string `AGENT`. The text after `AGENT -` becomes the description it shows to the user when they ask what agents are available.
 
 1. With the process still selected (empty canvas area), find the **Version Tag** field in the properties panel.
 2. Replace the default value with your own description in this format:
@@ -86,7 +96,7 @@ The **Version Tag** identifies what this agent does. It must start with `AGENT` 
    ```
    For example: `AGENT - Helps customers track and manage their support tickets`
 
-This tag is used to identify the agent's purpose at a glance and is required for the agent to be recognised correctly by the runtime.
+If the version tag does not start with `AGENT`, the routing agent will not find your process and users will not be able to reach it.
 
 ---
 
@@ -132,14 +142,15 @@ If you are using your own cluster or the agent cannot reach Bedrock, you need an
 
 Before testing, re-deploy the process to pick up all the configuration changes made since Step 4. Open the BPMN in Web Modeler and click **Deploy** again.
 
-1. Go to [Camunda Tasklist](https://tasklist.camunda.io) and log in to the same cluster.
-2. Start a new process instance using your process name and submit a request. A good first test exercises both built-in capabilities at once:
-   ```
-   In 30 seconds can you respond to me with the current time in Jakarta?
-   ```
-   This tests the timer wait and the current time tool together.
-3. You should see a process instance appear in Camunda **Operate** and a response arrive via the agent.
-4. Reply to continue the conversation — the process is waiting for it.
+🤖 **Camundi using the shared development cluster:** mention the Camunda Slack bot in any channel it is in. It will query the cluster, find your agent by its version tag, and offer it to you. Select it and submit your request — the routing agent handles the rest.
+
+For everyone else, trigger a process instance directly and submit a request. A good first test exercises both built-in capabilities at once:
+
+```
+In 30 seconds can you respond to me with the current time in Jakarta?
+```
+
+This tests the timer wait and the current time tool together. You should see a process instance appear in Camunda **Operate**, and a reply arrive via the routing agent. Continue the conversation to confirm the reply loop works.
 
 ---
 

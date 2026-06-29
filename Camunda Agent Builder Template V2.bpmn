@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Web Modeler" exporterVersion="70fd62a" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.9.0">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.47.0" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.9.0">
   <bpmn:process id="Camunda-Agent-Template" name="Camunda Agent Template" isExecutable="true">
     <bpmn:extensionElements>
       <zeebe:versionTag value="AGENT - This is the template used to build an agent" />
@@ -17,7 +17,7 @@
           <zeebe:input source="{{secrets.AWS_ACCESS_KEY}}" target="provider.bedrock.authentication.accessKey" />
           <zeebe:input source="{{secrets.AWS_SECRET_KEY}}" target="provider.bedrock.authentication.secretKey" />
           <zeebe:input source="us.anthropic.claude-sonnet-4-6" target="provider.bedrock.model.model" />
-          <zeebe:input source="=&#34;You are a **Camunda Task Agent**, a helpful, generic chat agent that can handle a wide variety of customer requests using your own domain knowledge **and** any tools explicitly provided to you at runtime. &#10;&#10;Your goal is to provide an answer to questoins about our camunda stuff or anthing the end sure might need. Make sure to answer any followup questoins that might also be asked.&#10;&#10;## Tool Use Rules&#10;&#10;1. **Only use tools that have been explicitly configured.** Never guess or invent tool names.&#10;2. **If no tool matches the request**, attempt to answer from your own knowledge. If you cannot, use the appropriate communication tool to tell the user why.&#10;3. You may call the same tool more than once with different inputs.&#10;4. When it makes sense, call multiple tools in parallel.&#10;&#10;## ⚠️ Critical: How Users Receive Your Responses&#10;&#10;&#62; **Users cannot see your assistant text under any circumstances.** Your words only reach the user when delivered through a tool call.&#10;&#10;**This means:**&#10;&#10;- **Never write your answer in assistant text.** Writing it out in text does NOT communicate it to the user — it is invisible to them.&#10;- **Every message to the user — without exception — must be sent by calling a communication tool.**&#10;- This applies to all responses: answers, summaries, clarifications, partial updates, and error messages.&#10;- **You must call a communication tool BEFORE ending the process.** Finishing without calling a communication tool means the user received nothing.&#10;- Selecting no tool is only valid as the very last action — and only after a communication tool has already been called in the same turn.&#10;&#10;Wrap minimal, inspectable reasoning in *exactly* this XML template:&#10;&#10;&#60;thinking&#62;&#10;&#60;context&#62;…briefly state the customer’s need and current state…&#60;/context&#62;&#10;&#60;reflection&#62;…list candidate tools, justify which you will call next and why…&#60;/reflection&#62;&#10;&#60;/thinking&#62;&#10;&#10;Reveal **no** additional private reasoning outside these tags.&#34;" target="data.systemPrompt.prompt" />
+          <zeebe:input source="=&#34;You are a **Camunda Task Agent**, a helpful, generic chat agent that can handle a wide variety of customer requests using your own domain knowledge **and** any tools explicitly provided to you at runtime. &#10;&#10;Your goal is to provide an answer to questoins about our camunda stuff or anthing the end sure might need. Make sure to answer any followup questoins that might also be asked.&#10;&#10;## Tool Use Rules&#10;&#10;1. **Only use tools that have been explicitly configured.** Never guess or invent tool names.&#10;2. **If no tool matches the request**, attempt to answer from your own knowledge. If you cannot, use the appropriate communication tool to tell the user why.&#10;3. You may call the same tool more than once with different inputs.&#10;4. When it makes sense, call multiple tools in parallel.&#10;&#10;## ⚠️ Critical: How Users Receive Your Responses&#10;&#10;&#62; **Users cannot see your assistant text under any circumstances.** Your words only reach the user when delivered through a tool call.&#10;&#10;**This means:**&#10;&#10;- **Never write your answer in assistant text.** Writing it out in text does NOT communicate it to the user — it is invisible to them.&#10;- **Every message to the user — without exception — must be sent by calling a communication tool.**&#10;- This applies to all responses: answers, summaries, clarifications, partial updates, and error messages.&#10;- **You must call a communication tool BEFORE ending the process.** Finishing without calling a communication tool means the user received nothing.&#10;- Selecting no tool is only valid as the very last action — and only after a communication tool has already been called in the same turn.&#10;&#10;After you feel you&#39;ve completed the goal set out by the user make sure add a final summary of the results to the assistantText for the purpose of auditing&#10;&#10;Wrap minimal, inspectable reasoning in *exactly* this XML template:&#10;&#10;&#60;thinking&#62;&#10;&#60;context&#62;…briefly state the customer’s need and current state…&#60;/context&#62;&#10;&#60;reflection&#62;…list candidate tools, justify which you will call next and why…&#60;/reflection&#62;&#10;&#60;/thinking&#62;&#10;&#10;Reveal **no** additional private reasoning outside these tags.&#34;" target="data.systemPrompt.prompt" />
           <zeebe:input source="=string(question)" target="data.userPrompt.prompt" />
           <zeebe:input source="=agent.context" target="agentContext" />
           <zeebe:input source="in-process" target="data.memory.storage.type" />
@@ -183,99 +183,99 @@ Keep messages concise. Slack is a conversational medium, not a document. Prefer 
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Camunda-Agent-Template">
       <bpmndi:BPMNShape id="Event_14an6hl_di" bpmnElement="Event_14an6hl">
-        <dc:Bounds x="1482" y="232" width="36" height="36" />
+        <dc:Bounds x="1312" y="162" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1457" y="275" width="90" height="27" />
+          <dc:Bounds x="1287" y="205" width="90" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_1xv48se_di" bpmnElement="Activity_1jbvj8d" isExpanded="true">
-        <dc:Bounds x="490" y="150" width="860" height="612" />
+        <dc:Bounds x="320" y="80" width="860" height="612" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_1bf1sdt_di" bpmnElement="Activity_1wck987">
-        <dc:Bounds x="950" y="312" width="100" height="80" />
+        <dc:Bounds x="780" y="242" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_1aol2by_di" bpmnElement="Event_0m8dzxr">
-        <dc:Bounds x="1152" y="234" width="36" height="36" />
+        <dc:Bounds x="982" y="164" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1132" y="277" width="77" height="27" />
+          <dc:Bounds x="962" y="207" width="77" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0q1n224_di" bpmnElement="Activity_0dcm91w">
-        <dc:Bounds x="950" y="212" width="100" height="80" />
+        <dc:Bounds x="780" y="142" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_0ej9wod_di" bpmnElement="Gateway_1g2q0zh">
-        <dc:Bounds x="1075" y="227" width="50" height="50" />
+        <dc:Bounds x="905" y="157" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_1v7iep8_di" bpmnElement="Event_1v7iep8">
-        <dc:Bounds x="1152" y="344" width="36" height="36" />
+        <dc:Bounds x="982" y="274" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1139" y="387" width="65" height="14" />
+          <dc:Bounds x="969" y="317" width="65" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0p8jg86_di" bpmnElement="Event_1ns111c">
-        <dc:Bounds x="812" y="254" width="36" height="36" />
+        <dc:Bounds x="642" y="184" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="791" y="297" width="79" height="27" />
+          <dc:Bounds x="621" y="227" width="79" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_1oqjckm_di" bpmnElement="Activity_1ily3dl">
-        <dc:Bounds x="580" y="232" width="100" height="80" />
+        <dc:Bounds x="410" y="162" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0xahovv_di" bpmnElement="Event_1yaop1k">
-        <dc:Bounds x="722" y="254" width="36" height="36" />
+        <dc:Bounds x="552" y="184" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="703" y="297" width="74" height="27" />
+          <dc:Bounds x="533" y="227" width="74" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_0qfo9kt_di" bpmnElement="Flow_0qfo9kt">
-        <di:waypoint x="1125" y="252" />
-        <di:waypoint x="1152" y="252" />
+        <di:waypoint x="955" y="182" />
+        <di:waypoint x="982" y="182" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0dv1xfi_di" bpmnElement="Flow_0dv1xfi">
-        <di:waypoint x="1050" y="252" />
-        <di:waypoint x="1075" y="252" />
+        <di:waypoint x="880" y="182" />
+        <di:waypoint x="905" y="182" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0y1tq3b_di" bpmnElement="Flow_0y1tq3b">
-        <di:waypoint x="1100" y="277" />
-        <di:waypoint x="1100" y="362" />
-        <di:waypoint x="1152" y="362" />
+        <di:waypoint x="930" y="207" />
+        <di:waypoint x="930" y="292" />
+        <di:waypoint x="982" y="292" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0kadqyk_di" bpmnElement="Flow_0kadqyk">
-        <di:waypoint x="758" y="272" />
-        <di:waypoint x="812" y="272" />
+        <di:waypoint x="588" y="202" />
+        <di:waypoint x="642" y="202" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1q345fv_di" bpmnElement="Flow_1q345fv">
-        <di:waypoint x="680" y="272" />
-        <di:waypoint x="722" y="272" />
+        <di:waypoint x="510" y="202" />
+        <di:waypoint x="552" y="202" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Event_17v5oy8_di" bpmnElement="Event_17v5oy8">
-        <dc:Bounds x="352" y="232" width="36" height="36" />
+        <dc:Bounds x="182" y="162" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="327" y="275" width="86" height="27" />
+          <dc:Bounds x="158" y="205" width="85" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Group_0sybyb7_di" bpmnElement="Group_0sybyb7">
-        <dc:Bounds x="525" y="182" width="815" height="260" />
+        <dc:Bounds x="355" y="112" width="815" height="260" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="901" y="189" width="64" height="14" />
+          <dc:Bounds x="731" y="119" width="64" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Group_0bgen4c_di" bpmnElement="Group_0bgen4c">
-        <dc:Bounds x="525" y="462" width="790" height="230" />
+        <dc:Bounds x="355" y="392" width="790" height="230" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="889" y="469" width="65" height="27" />
+          <dc:Bounds x="719" y="399" width="65" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_0jt0w1f_di" bpmnElement="Flow_0jt0w1f">
-        <di:waypoint x="1350" y="250" />
-        <di:waypoint x="1482" y="250" />
+        <di:waypoint x="1180" y="180" />
+        <di:waypoint x="1312" y="180" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_05dolpf_di" bpmnElement="Flow_05dolpf">
-        <di:waypoint x="388" y="250" />
-        <di:waypoint x="490" y="250" />
+        <di:waypoint x="218" y="180" />
+        <di:waypoint x="320" y="180" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
