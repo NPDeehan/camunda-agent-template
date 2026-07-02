@@ -142,15 +142,93 @@ If you are using your own cluster or the agent cannot reach Bedrock, you need an
 
 Before testing, re-deploy the process to pick up all the configuration changes made since Step 4. Open the BPMN in Web Modeler and click **Deploy** again.
 
-🤖 **Camundi using the shared development cluster:** mention the Camunda Slack bot in any channel it is in. It will query the cluster, find your agent by its version tag, and offer it to you. Select it and submit your request — the routing agent handles the rest.
+**Testing via Slack:**
 
-For everyone else, trigger a process instance directly and submit a request. A good first test exercises both built-in capabilities at once:
+1. Start a **new thread** in Slack and ask the `CamundaAgentHelper` bot whether your agent is deployed — for example: `Is <your agent name> deployed?` It will scan the cluster and confirm if it finds your version tag.
+2. Once confirmed, send this message in the same thread:
+
+   ```
+   Tell me the time in Jakarta in 10 seconds time
+   ```
+
+3. After 10 seconds you should receive a reply with the current Jakarta time. This exercises both the timer wait and the current time tool in a single test.
+
+If no reply arrives, check that the version tag on your deployed process starts with `AGENT` and re-deploy if you made changes after Step 4. You can also open Camunda **Operate** to see whether a process instance was started.
+
+---
+
+## Bonus features
+
+These are optional enhancements you can tackle in any order — pick whichever sounds most fun.
+
+### Bonus 1 — Give your agent some personality
+
+By default the system prompt is fairly dry. You can make your agent far more interesting by replacing the opening paragraph with a vivid personality description.
+
+1. In Web Modeler, click on the **AI Agent (ad-hoc sub-process)** element (the large rounded rectangle that contains the agent tasks).
+2. In the properties panel on the right, find the **System Prompt** input field.
+3. Replace the first paragraph with a personality of your choosing. The rest of the prompt (tool descriptions, response rules, etc.) can stay as-is.
+
+For example, something completely over the top:
 
 ```
-In 30 seconds can you respond to me with the current time in Jakarta?
+You are Captain Reginald von Timestamps III, a retired 18th-century naval officer 
+who was inexplicably transported to the present day and now works as a timezone 
+assistant. You are deeply suspicious of digital clocks, refer to all time zones 
+as "distant seas", and cannot resist adding a brief nautical anecdote to every 
+response. You are unfailingly polite but increasingly baffled by modernity.
 ```
 
-This tests the timer wait and the current time tool together. You should see a process instance appear in Camunda **Operate**, and a reply arrive via the routing agent. Continue the conversation to confirm the reply loop works.
+Re-deploy the process after saving, then test it in Slack — the difference in tone is immediate.
+
+### Bonus 2 — Connect a data source
+
+You can give your agent access to real data by wiring up a connector that talks to an external system. In this case you will connect it to **Camunda's own data sources** via the **Actora MCP Gateway** connector, which is already deployed to the organisation and ready to use.
+
+#### Step 1 — Add a new task inside the agent
+
+Look at the BPMN canvas. Inside the ad-hoc sub-process there is a labelled area that says **"put your new tools here"** — this is where agent tools live.
+
+1. From the element palette on the left, drag a **Task** (the plain rectangle) and drop it inside that area.
+
+> If you accidentally drop it outside the sub-process boundary, the agent won't be able to use it. Make sure the sub-process border highlights when you hover before you release.
+
+#### Step 2 — Change the task type to the Actora MCP Gateway connector
+
+A plain task does nothing on its own — you need to change it to a specific connector type.
+
+1. Click the task you just created to select it.
+2. In the small context menu that appears next to the element, click the **first icon** — it looks like a rectangle in front of a square. This opens the change-type picker.
+3. In the search box that appears, type `Actora MCP Gateway` and select it from the results.
+
+The task icon will update to show it is now a connector task.
+
+#### Step 3 — Name the task
+
+With the task still selected, look at the properties panel on the right.
+
+1. Find the **Name** field and give the task a clear, descriptive name — for example: `Get Camunda Data`.
+
+The name is what the agent uses to refer to this tool internally, so make it obvious what the tool does.
+
+#### Step 4 — Write the tool description
+
+This is the most important step. The agent decides *when* to use a tool based entirely on the **Documentation** field of the task element — so you need to write a short explanation of what this tool is for.
+
+1. In the properties panel, find the **Element documentation** field.
+2. Write a clear description of what the tool does and when the agent should call it. For example:
+
+   ```
+   Use this tool to retrieve data from Camunda's internal data sources. 
+   Call it when the user asks about processes, instances, incidents, 
+   decisions, or anything else that lives in the Camunda platform.
+   ```
+
+Without a documentation description the agent has no idea the tool exists and will never call it.
+
+#### Step 5 — Re-deploy and test
+
+Deploy the updated process, then ask your agent something that requires Camunda data. It should now call the new tool and include real results in its reply.
 
 ---
 
