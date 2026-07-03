@@ -115,7 +115,7 @@ The cluster is now set as the deployment target for every BPMN in this project.
 ## Step 4 — Deploy the process
 
 1. Open `Camunda Agent Builder Template V2.bpmn` in Web Modeler.
-2. Click **Deploy** in the top-right corner and confirm.
+2. In the top-right corner you will see a **Deploy and Run** button — do **not** click this directly. Instead, click the **down arrow** beside it and select **Deploy** from the dropdown.
 
 > **Expected warnings:** You may see warnings about secrets that do not exist yet (`AWS_…`). This is normal — the secrets will be added in the next step. The deployment will still succeed.
 
@@ -140,7 +140,7 @@ If you are using your own cluster or the agent cannot reach Bedrock, you need an
 
 ## Step 6 — Test it
 
-Before testing, re-deploy the process to pick up all the configuration changes made since Step 4. Open the BPMN in Web Modeler and click **Deploy** again.
+Before testing, re-deploy the process to pick up all the configuration changes made since Step 4. Open the BPMN in Web Modeler, click the **down arrow** beside the **Deploy and Run** button in the top-right corner, and select **Deploy**.
 
 **Testing via Slack:**
 
@@ -154,6 +154,8 @@ Before testing, re-deploy the process to pick up all the configuration changes m
 3. After 10 seconds you should receive a reply with the current Jakarta time. This exercises both the timer wait and the current time tool in a single test.
 
 If no reply arrives, check that the version tag on your deployed process starts with `AGENT` and re-deploy if you made changes after Step 4. You can also open Camunda **Operate** to see whether a process instance was started.
+
+Once your agent is working, come back to this thread and try the **Bonus features** below!
 
 ---
 
@@ -228,7 +230,7 @@ Without a documentation description the agent has no idea the tool exists and wi
 
 #### Step 5 — Re-deploy and test
 
-Deploy the updated process, then ask your agent something that requires Camunda data. It should now call the new tool and include real results in its reply.
+Click the **down arrow** beside the **Deploy and Run** button in the top-right corner and select **Deploy**. Then ask your agent something that requires Camunda data. It should now call the new tool and include real results in its reply.
 
 ---
 
