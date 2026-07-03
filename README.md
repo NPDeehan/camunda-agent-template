@@ -105,7 +105,7 @@ If the version tag does not start with `AGENT`, the routing agent will not find 
 Before you can deploy, you need to link your Camunda cluster to the Web Modeler project.
 
 1. Click the **back arrow** to return to the project view (the list of files in your project).
-2. In the left sidebar, click **Connected clusters**.
+2. In the right sidebar, click **Connected clusters**.
 3. In the dropdown, select the cluster you want to deploy to.
 
 The cluster is now set as the deployment target for every BPMN in this project.
