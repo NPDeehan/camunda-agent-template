@@ -1,6 +1,7 @@
 # Camunda Agent — Starter Template
 
 ![Process diagram](img/processimage.png)
+https://raw.githubusercontent.com/NPDeehan/camunda-agent-template/refs/heads/main/img/processimage.png
 
 This is a **ready-to-deploy starter template** for building a conversational AI agent on Camunda 8. If you have never built a Camunda agent before and want a working starting point — this is it.
 
@@ -72,6 +73,7 @@ Before starting you will need:
 3. Inside the project, click **Add file** → **Browse blueprints**. Search for **Camunda Agent Starter** and select it. The BPMN will be added to your project automatically.
 
 ![Choosing the blueprint](img/Choosing%20the%20blueprint.png)
+https://raw.githubusercontent.com/NPDeehan/camunda-agent-template/refs/heads/main/img/Choosing%20the%20blueprint.png
 
 ---
 
@@ -101,6 +103,7 @@ The **Version Tag** serves two purposes: it tells users what your agent does, an
 If the version tag does not start with `AGENT`, the routing agent will not find your process and users will not be able to reach it.
 
 ![Agent properties panel](img/agnetPropertiesPanel.png)
+https://raw.githubusercontent.com/NPDeehan/camunda-agent-template/refs/heads/main/img/agnetPropertiesPanel.png
 
 ---
 
@@ -115,6 +118,7 @@ Before you can deploy, you need to link your Camunda cluster to the Web Modeler 
 The cluster is now set as the deployment target for every BPMN in this project.
 
 ![Configuring the cluster connection](img/ConfigureServer.png)
+https://raw.githubusercontent.com/NPDeehan/camunda-agent-template/refs/heads/main/img/ConfigureServer.png
 
 ---
 
