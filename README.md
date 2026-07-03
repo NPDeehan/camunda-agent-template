@@ -71,6 +71,8 @@ Before starting you will need:
 2. Click **Create new project** and give it a name.
 3. Inside the project, click **Add file** → **Browse blueprints**. Search for **Camunda Agent Starter** and select it. The BPMN will be added to your project automatically.
 
+![Choosing the blueprint](img/Choosing%20the%20blueprint.png)
+
 ---
 
 ## Step 2 — Configure the model
@@ -98,6 +100,8 @@ The **Version Tag** serves two purposes: it tells users what your agent does, an
 
 If the version tag does not start with `AGENT`, the routing agent will not find your process and users will not be able to reach it.
 
+![Agent properties panel](img/agnetPropertiesPanel.png)
+
 ---
 
 ## Step 3 — Connect your cluster to the project
@@ -109,6 +113,8 @@ Before you can deploy, you need to link your Camunda cluster to the Web Modeler 
 3. In the dropdown, select the cluster you want to deploy to.
 
 The cluster is now set as the deployment target for every BPMN in this project.
+
+![Configuring the cluster connection](img/ConfigureServer.png)
 
 ---
 
