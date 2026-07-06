@@ -244,6 +244,86 @@ Click the **down arrow** beside the **Deploy and Run** button in the top-right c
 
 ---
 
+### Bonus 3 — Give your agent access to the latest news
+
+You can give your agent a live news search capability by wiring up a REST connector that calls **The Guardian's public API**. Once added, the agent will automatically call this tool whenever a user asks about current events or news on a topic.
+
+#### Step 1 — Add a new task inside the agent
+
+Inside the ad-hoc sub-process, find the area labelled **"put your new tools here"**.
+
+1. From the element palette on the left, drag a **Task** (the plain rectangle) and drop it inside that area.
+
+> If you accidentally drop it outside the sub-process boundary the agent won't be able to use it. Make sure the sub-process border highlights when you hover before you release.
+
+#### Step 2 — Change the task type to a REST connector
+
+1. Click the task to select it.
+2. In the context menu that appears next to the element, click the **first icon** (it looks like a rectangle in front of a square) to open the change-type picker.
+3. Search for `REST` and select the **REST connector**.
+
+#### Step 3 — Name the task
+
+1. In the properties panel on the right, find the **Name** field.
+2. Give the task a clear name — for example: `Get Latest News on Topic`.
+
+The name is what the agent uses to refer to this tool internally, so make it obvious what the tool does.
+
+#### Step 4 — Write the tool description
+
+The agent decides *when* to use a tool based on the **Element documentation** field — this becomes the tool description the LLM sees.
+
+1. In the properties panel, find the **Element documentation** field.
+2. Write a description of what the tool does and when to call it. For example:
+
+   ```
+   Use this tool to find the latest news articles on a given topic. 
+   Call it when the user asks about current events, recent news, 
+   or wants to know what is happening in a particular area.
+   ```
+
+#### Step 5 — Configure the URL
+
+The URL uses a `fromAI` function so the agent can dynamically fill in the search topic at runtime.
+
+1. In the properties panel, find the **URL** input field.
+2. Paste in the following expression:
+
+   ```
+   "https://content.guardianapis.com/search?api-key=test&page-size=5&q="
+   + fromAi(toolCall.topicToSearch, "this is the topic you want to search for. The format requests that you don't use spaces, use '+' instead")
+   +"&show-fields=headline%2Cbyline"
+   ```
+
+The `fromAi(...)` call tells the AI agent framework to ask the LLM to fill in that value at the point the tool is called. The second argument is the instruction the LLM sees — so it knows to format the topic with `+` instead of spaces.
+
+#### Step 6 — Configure the result expression
+
+After the connector runs, the result needs to be handed back to the LLM in a format it can read.
+
+1. In the properties panel, find the **Result expression** field (under the Output section).
+2. Paste in the following:
+
+   ```
+   {
+     toolCallResult: response.body
+   }
+   ```
+
+This maps the HTTP response body into `toolCallResult`, which is the variable the AI agent task reads to get the tool's output.
+
+#### Step 7 — Re-deploy and test
+
+Click **Deploy** and then ask your agent about a news topic, for example:
+
+```
+What is the latest news on artificial intelligence?
+```
+
+The agent should call the news tool, retrieve the Guardian headlines, and summarise them in its reply.
+
+---
+
 ## Built-in BPMN capabilities
 
 The template includes two built-in agent tools that are implemented entirely in BPMN — no external service required.
