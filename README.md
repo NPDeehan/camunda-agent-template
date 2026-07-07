@@ -3,13 +3,13 @@
 ![Process diagram](img/processimage.png)
 https://raw.githubusercontent.com/NPDeehan/camunda-agent-template/refs/heads/main/img/processimage.png
 
-This is a **ready-to-deploy starter template** for building a conversational AI agent on Camunda 8. If you have never built a Camunda agent before and want a working starting point — this is it.
+This is a **ready-to-deploy starter template** for building a conversational AI agent hosted on Camunda 8. By the end of this tutorial you will have a working agent that users can talk to directly through the **`CamundaAgentHelper`** Slack bot — no Slack configuration required on your part. If you have never built a Camunda agent before and want a working starting point — this is it.
 
 The template ships with:
 
 - Built-in BPMN-native abilities to **wait for a user reply** or **pause for a period of time** before continuing — no custom code required.
 - An **AI agent** backed by Claude Sonnet 4.6 on AWS Bedrock, wired up inside an ad-hoc sub-process.
-- **Automatic discovery** — once deployed with the correct version tag, the agent is visible to the [Camunda Agent Routing Process](https://github.com/NPDeehan/Camunda-Agent-Routing-Process) and can be called by users immediately.
+- **Automatic discovery** — once deployed with the correct version tag, the agent is visible to the [Camunda Agent Routing Process](https://github.com/NPDeehan/Camunda-Agent-Routing-Process) and can be called by users immediately via `CamundaAgentHelper`.
 
 You replace the sample domain logic with your own, keep what you need, and delete the rest.
 
@@ -152,20 +152,33 @@ If you are using your own cluster or the agent cannot reach Bedrock, you need an
 
 Before testing, re-deploy the process to pick up all the configuration changes made since Step 4. Open the BPMN in Web Modeler, click the **down arrow** beside the **Deploy and Run** button in the top-right corner, and select **Deploy**.
 
-**Testing via Slack:**
-
-1. Start a **new thread** in Slack and ask the `CamundaAgentHelper` bot whether your agent is deployed — for example: `Is <your agent name> deployed?` It will scan the cluster and confirm if it finds your version tag.
-2. Once confirmed, send this message in the same thread:
+1. In Slack, `@mention` the `CamundaAgentHelper` bot in any channel it is in.
+2. It will scan the cluster for deployed agents. When it finds yours (by the `AGENT` version tag), it will offer to connect you to it — select your agent.
+3. Once connected, send it this message:
 
    ```
-   Tell me the time in Jakarta in 10 seconds time
+   In 10 seconds can you tell me the current time in Jakarta?
    ```
 
-3. After 10 seconds you should receive a reply with the current Jakarta time. This exercises both the timer wait and the current time tool in a single test.
+   This is an ideal first test because it exercises two built-in tools at once — the timer wait and the current time lookup.
 
-If no reply arrives, check that the version tag on your deployed process starts with `AGENT` and re-deploy if you made changes after Step 4. You can also open Camunda **Operate** to see whether a process instance was started.
+4. After 10 seconds you should receive a reply with the Jakarta time in the Slack thread.
 
-Once your agent is working, come back to this thread and try the **Bonus features** below!
+If no reply arrives, check that the version tag on your deployed process starts with `AGENT` and that you re-deployed after making any changes. Then move on to Step 7 to inspect what happened inside the process.
+
+---
+
+## Step 7 — Watch your process run in Operate
+
+While your agent is running (or after it completes), you can watch exactly what it is doing inside Camunda Operate. This is one of the most useful things about building agents on Camunda — you get full visibility into every step the agent takes.
+
+1. Go to [Camunda Operate](https://operate.camunda.io) and log in to the same cluster you deployed to.
+2. In the left sidebar, click **Processes** and find your process by the name you gave it in Step 2a.
+3. Click on the process to see a list of instances. Click the running (or most recent) instance.
+
+You will see the BPMN diagram with a coloured token showing exactly where execution currently is. When the agent is thinking or calling a tool, the token will sit inside the ad-hoc sub-process. You can watch it move through the timer event, the current time script task, and back out again in real time.
+
+If something went wrong — for example the agent never replied — Operate will show you any incidents or error messages on the failed element, which makes debugging straightforward.
 
 ---
 
