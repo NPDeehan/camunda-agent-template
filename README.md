@@ -172,7 +172,7 @@ If no reply arrives, check that the version tag on your deployed process starts 
 
 While your agent is running (or after it completes), you can watch exactly what it is doing inside Camunda Operate. This is one of the most useful things about building agents on Camunda — you get full visibility into every step the agent takes.
 
-1. Go to [Camunda Operate](https://operate.camunda.io) and log in to the same cluster you deployed to.
+1. Go to Camunda Operate and log in to the same cluster you deployed to.
 2. In the left sidebar, click **Processes** and find your process by the name you gave it in Step 2a.
 3. Click on the process to see a list of instances. Click the running (or most recent) instance.
 
