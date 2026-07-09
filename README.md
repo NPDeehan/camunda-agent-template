@@ -124,10 +124,11 @@ https://raw.githubusercontent.com/NPDeehan/camunda-agent-template/refs/heads/mai
 
 ## Step 4 — Deploy the process
 
+> **Before deploying:** Make sure the Process ID you set in Step 2 is unique. If someone else has already deployed a process with the same ID to this cluster, your deployment will overwrite theirs. (The Agent Building Process should be able to help to check)
+
 1. Open `Camunda Agent Builder Template V2.bpmn` in Web Modeler.
 2. In the top-right corner you will see a **Deploy and Run** button — do **not** click this directly. Instead, click the **down arrow** beside it and select **Deploy** from the dropdown.
 
-> **Expected warnings:** You may see warnings about secrets that do not exist yet (`AWS_…`). This is normal — the secrets will be added in the next step. The deployment will still succeed.
 
 ---
 
