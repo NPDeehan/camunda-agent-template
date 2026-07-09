@@ -70,7 +70,7 @@ Before starting you will need:
 
 1. Log in to [Camunda Web Modeler](https://modeler.camunda.io).
 2. Click **Create new project** and give it a name.
-3. Inside the project, click **Add file** → **Browse blueprints**. Search for **Camunda Agent Starter** and select it. The BPMN will be added to your project automatically.
+3. Inside the project, click **Browse blueprints**. Search for **Camunda Agent Starter Project**, select it, and follow the on-screen instructions to add it to your project.
 
 ![Choosing the blueprint](img/Choosing%20the%20blueprint.png)
 https://raw.githubusercontent.com/NPDeehan/camunda-agent-template/refs/heads/main/img/Choosing%20the%20blueprint.png
@@ -114,6 +114,7 @@ Before you can deploy, you need to link your Camunda cluster to the Web Modeler 
 1. Click the **back arrow** to return to the project view (the list of files in your project).
 2. In the right sidebar, click **Connected clusters**.
 3. In the dropdown, select the cluster you want to deploy to.
+4. Open the **Production** dropdown that appears and select the available option, then click **Save**.
 
 The cluster is now set as the deployment target for every BPMN in this project.
 
@@ -122,7 +123,15 @@ https://raw.githubusercontent.com/NPDeehan/camunda-agent-template/refs/heads/mai
 
 ---
 
-## Step 4 — Deploy the process
+## Step 4 — Open Camunda Operate
+
+Before deploying, open **Camunda Operate** in a separate browser tab. This way you can switch straight to it after deploying and watch your process instance run in real time — which makes testing and debugging much easier.
+
+Log in to [Camunda Operate](https://operate.camunda.io) with the same account and select the same cluster you connected in Step 3.
+
+---
+
+## Step 5 — Deploy the process
 
 > **Before deploying:** Make sure the Process ID you set in Step 2 is unique. If someone else has already deployed a process with the same ID to this cluster, your deployment will overwrite theirs. (The Agent Building Process should be able to help to check)
 
@@ -132,7 +141,7 @@ https://raw.githubusercontent.com/NPDeehan/camunda-agent-template/refs/heads/mai
 
 ---
 
-## Step 5 — Configure AWS credentials *(skip if you have been given access to a demo cluster)*
+## Step 6 — Configure AWS credentials *(skip if you have been given access to a demo cluster)*
 
 > **Using a Camunda-provided development cluster?** Dev clusters often come with Bedrock model access pre-configured at the cluster level. Try running the agent first — if it fails to invoke the model, come back here and add the AWS secrets manually.
 
@@ -149,27 +158,19 @@ If you are using your own cluster or the agent cannot reach Bedrock, you need an
 
 ---
 
-## Step 6 — Test it
+## Step 7 — Test it
 
-Before testing, re-deploy the process to pick up all the configuration changes made since Step 4. Open the BPMN in Web Modeler, click the **down arrow** beside the **Deploy and Run** button in the top-right corner, and select **Deploy**.
+In Slack, start a new thread and send:
 
-1. In Slack, `@mention` the `CamundaAgentHelper` bot in any channel it is in.
-2. It will scan the cluster for deployed agents. When it finds yours (by the `AGENT` version tag), it will offer to connect you to it — select your agent.
-3. Once connected, send it this message:
+```
+@CamundaAgentHelper Can you check if my agent <your-process-id> is deployed?
+```
 
-   ```
-   In 10 seconds can you tell me the current time in Jakarta?
-   ```
+If it is, ask it `Tell me the time in Jakarta in 10 seconds time` — after 10 seconds you should receive a reply.
 
-   This is an ideal first test because it exercises two built-in tools at once — the timer wait and the current time lookup.
+If no reply arrives, check that the version tag on your deployed process starts with `AGENT` and that you deployed in Step 5. You can also check Camunda Operate to see whether a process instance was started.
 
-4. After 10 seconds you should receive a reply with the Jakarta time in the Slack thread.
-
-If no reply arrives, check that the version tag on your deployed process starts with `AGENT` and that you re-deployed after making any changes. Then move on to Step 7 to inspect what happened inside the process.
-
----
-
-## Step 7 — Watch your process run in Operate
+Once your agent is working, come back to this thread and try the **Bonus features** below!
 
 While your agent is running (or after it completes), you can watch exactly what it is doing inside Camunda Operate. This is one of the most useful things about building agents on Camunda — you get full visibility into every step the agent takes.
 
@@ -201,7 +202,7 @@ For example, something completely over the top:
 You are Captain Reginald von Timestamps III, a retired 18th-century naval officer 
 who was inexplicably transported to the present day and now works as a timezone 
 assistant. You are deeply suspicious of digital clocks, refer to all time zones 
-as "distant seas", and cannot resist adding a brief nautical anecdote to every 
+as 'distant seas', and cannot resist adding a brief nautical anecdote to every 
 response. You are unfailingly polite but increasingly baffled by modernity.
 ```
 
@@ -209,7 +210,7 @@ Re-deploy the process after saving, then test it in Slack — the difference in 
 
 ### Bonus 2 — Connect a data source
 
-You can give your agent access to real data by wiring up a connector that talks to an external system. In this case you will connect it to **Camunda's own data sources** via the **Actora MCP Gateway** connector, which is already deployed to the organisation and ready to use.
+You can give your agent access to real data by wiring up a connector that talks to an external system. In this case you will use the **Actora MCP Gateway** connector — a tool that lets your agent query data sources that have been connected to Camunda, such as GitHub repositories, Jira, or other integrated services. The connector is already deployed to the organisation and ready to use.
 
 #### Step 1 — Add a new task inside the agent
 
