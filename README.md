@@ -303,9 +303,7 @@ The URL uses a `fromAI` function so the agent can dynamically fill in the search
 2. Paste in the following expression:
 
    ```
-   "https://content.guardianapis.com/search?api-key=test&page-size=5&q="
-   + fromAi(toolCall.topicToSearch, "this is the topic you want to search for. The format requests that you don't use spaces, use '+' instead")
-   +"&show-fields=headline%2Cbyline"
+   "https://content.guardianapis.com/search?api-key={{secrets.GUARDIAN_KEY}}&page-size=5&q="+ fromAi(toolCall.topicToSearch, "this is the topic you want to search for. The format requests that you don't uses spaces, use '+' instead") +"&show-fields=headline%2Cbyline"
    ```
 
 The `fromAi(...)` call tells the AI agent framework to ask the LLM to fill in that value at the point the tool is called. The second argument is the instruction the LLM sees — so it knows to format the topic with `+` instead of spaces.
