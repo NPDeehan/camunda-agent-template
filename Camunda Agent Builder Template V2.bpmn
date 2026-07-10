@@ -95,7 +95,9 @@
         <bpmn:messageEventDefinition id="MessageEventDefinition_1v20xqy" messageRef="Message_09ebrp1" />
       </bpmn:intermediateCatchEvent>
       <bpmn:scriptTask id="Activity_1ily3dl" name="Create Message for User">
-        <bpmn:documentation>Use this tool in order to send a response to a user who is communicating over Slack. Only send messages that you need a reply to. This tool is blocking and won't return a result unless a user responds. So always use it for a question not to give information.
+        <bpmn:documentation>Use this tool in order to send a response to a user who is communicating over slack. Only send messages that you need a reply to, this means you need to include a question that requires a response from the user. 
+This tools i blocking and wont return a result unless a user responds. So always use it for a question not to give information. 
+
 
 Remember that Slack has specific format requirements.
 When formatting messages for Slack, use Slack's mrkdwn syntax (NOT standard markdown):
