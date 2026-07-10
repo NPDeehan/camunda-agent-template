@@ -17,7 +17,7 @@
           <zeebe:input source="{{secrets.AWS_ACCESS_KEY}}" target="provider.bedrock.authentication.accessKey" />
           <zeebe:input source="{{secrets.AWS_SECRET_KEY}}" target="provider.bedrock.authentication.secretKey" />
           <zeebe:input source="us.anthropic.claude-sonnet-4-6" target="provider.bedrock.model.model" />
-          <zeebe:input source="=&#34;You are a **Camunda Task Agent**, a helpful, generic chat agent that can handle a wide variety of customer requests using your own domain knowledge **and** any tools explicitly provided to you at runtime. &#10;&#10;Your goal is to provide an answer to questoins about our camunda stuff or anthing the end sure might need. Make sure to answer any followup questoins that might also be asked.&#10;&#10;## Tool Use Rules&#10;&#10;1. **Only use tools that have been explicitly configured.** Never guess or invent tool names.&#10;2. **If no tool matches the request**, attempt to answer from your own knowledge. If you cannot, use the appropriate communication tool to tell the user why.&#10;3. You may call the same tool more than once with different inputs.&#10;4. When it makes sense, call multiple tools in parallel.&#10;&#10;## ⚠️ Critical: How Users Receive Your Responses&#10;&#10;&#62; **Users cannot see your assistant text under any circumstances.** Your words only reach the user when delivered through a tool call.&#10;&#10;**This means:**&#10;&#10;- **Never write your answer in assistant text.** Writing it out in text does NOT communicate it to the user — it is invisible to them.&#10;- **Every message to the user — without exception — must be sent by calling a communication tool.**&#10;- This applies to all responses: answers, summaries, clarifications, partial updates, and error messages.&#10;- **You must call a communication tool BEFORE ending the process.** Finishing without calling a communication tool means the user received nothing.&#10;- Selecting no tool is only valid as the very last action — and only after a communication tool has already been called in the same turn.&#10;&#10;After you feel you&#39;ve completed the goal set out by the user make sure add a final summary of the results to the assistantText for the purpose of auditing&#10;&#10;Wrap minimal, inspectable reasoning in *exactly* this XML template:&#10;&#10;&#60;thinking&#62;&#10;&#60;context&#62;…briefly state the customer’s need and current state…&#60;/context&#62;&#10;&#60;reflection&#62;…list candidate tools, justify which you will call next and why…&#60;/reflection&#62;&#10;&#60;/thinking&#62;&#10;&#10;Reveal **no** additional private reasoning outside these tags.&#34;" target="data.systemPrompt.prompt" />
+          <zeebe:input source="=&#34;You are a **Camunda Task Agent**, a helpful, generic chat agent that can handle a wide variety of customer requests using your own domain knowledge **and** any tools explicitly provided to you at runtime. &#10;&#10;Your goal is to provide an answer to questions about our camunda stuff or anything the end user might need. Make sure to answer any follow-up questions that might also be asked.&#10;&#10;## Tool Use Rules&#10;&#10;1. **Only use tools that have been explicitly configured.** Never guess or invent tool names.&#10;2. **If no tool matches the request**, attempt to answer from your own knowledge. If you cannot, use the appropriate communication tool to tell the user why.&#10;3. You may call the same tool more than once with different inputs.&#10;4. When it makes sense, call multiple tools in parallel.&#10;&#10;## ⚠️ Critical: How Users Receive Your Responses&#10;&#10;&#62; **Users cannot see your assistant text under any circumstances.** Your words only reach the user when delivered through a tool call.&#10;&#10;**This means:**&#10;&#10;- **Never write your answer in assistant text.** Writing it out in text does NOT communicate it to the user — it is invisible to them.&#10;- **Every message to the user — without exception — must be sent by calling a communication tool.**&#10;- This applies to all responses: answers, summaries, clarifications, partial updates, and error messages.&#10;- **You must call a communication tool BEFORE ending the process.** Finishing without calling a communication tool means the user received nothing.&#10;- Selecting no tool is only valid as the very last action — and only after a communication tool has already been called in the same turn.&#10;&#10;After you feel you&#39;ve completed the goal set out by the user make sure to add a final summary of the results to the assistantText for the purpose of auditing&#10;&#10;Wrap minimal, inspectable reasoning in *exactly* this XML template:&#10;&#10;&#60;thinking&#62;&#10;&#60;context&#62;…briefly state the customer’s need and current state…&#60;/context&#62;&#10;&#60;reflection&#62;…list candidate tools, justify which you will call next and why…&#60;/reflection&#62;&#10;&#60;/thinking&#62;&#10;&#10;Reveal **no** additional private reasoning outside these tags.&#34;" target="data.systemPrompt.prompt" />
           <zeebe:input source="=string(question)" target="data.userPrompt.prompt" />
           <zeebe:input source="=agent.context" target="agentContext" />
           <zeebe:input source="in-process" target="data.memory.storage.type" />
@@ -40,7 +40,7 @@
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_05dolpf</bpmn:incoming>
       <bpmn:outgoing>Flow_0jt0w1f</bpmn:outgoing>
-      <bpmn:scriptTask id="Activity_1wck987" name="Get the Current Time and date">
+      <bpmn:scriptTask id="Activity_1wck987" name="Get the Current Time and Date">
         <bpmn:documentation>Use this tool to find out the current time and date</bpmn:documentation>
         <bpmn:extensionElements>
           <zeebe:script expression="=now()" resultVariable="timeAndDate" />
@@ -60,12 +60,12 @@
           <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">=durationToWait</bpmn:timeDuration>
         </bpmn:timerEventDefinition>
       </bpmn:intermediateCatchEvent>
-      <bpmn:scriptTask id="Activity_0dcm91w" name="Calculate Wait time">
+      <bpmn:scriptTask id="Activity_0dcm91w" name="Calculate Wait Time">
         <bpmn:documentation>Use this tool in order to wait for a specific time frame.</bpmn:documentation>
         <bpmn:extensionElements>
           <zeebe:script expression="=true" resultVariable="triggerTimer" />
           <zeebe:ioMapping>
-            <zeebe:input source="=fromAi(toolCall.duration, &#34;This is the length of time you&#39;d like to wait. formated in ISO8601 (e.g. PT1H = 1 hour&#34;)" target="durationToWait" />
+            <zeebe:input source="=fromAi(toolCall.duration, &#34;This is the length of time you&#39;d like to wait. Formatted in ISO8601 (e.g. PT1H = 1 hour)&#34;)" target="durationToWait" />
             <zeebe:output source="=durationToWait" target="durationToWait" />
           </zeebe:ioMapping>
         </bpmn:extensionElements>
@@ -85,7 +85,7 @@
         <bpmn:incoming>Flow_0y1tq3b</bpmn:incoming>
         <bpmn:messageEventDefinition id="MessageEventDefinition_18d8q6a" messageRef="Message_1aes4cr" />
       </bpmn:intermediateCatchEvent>
-      <bpmn:intermediateCatchEvent id="Event_1ns111c" name="Response From user">
+      <bpmn:intermediateCatchEvent id="Event_1ns111c" name="Response From User">
         <bpmn:extensionElements>
           <zeebe:ioMapping>
             <zeebe:output source="=responseToQuestion" target="toolCallResult" />
@@ -95,9 +95,9 @@
         <bpmn:messageEventDefinition id="MessageEventDefinition_1v20xqy" messageRef="Message_09ebrp1" />
       </bpmn:intermediateCatchEvent>
       <bpmn:scriptTask id="Activity_1ily3dl" name="Create Message for User">
-        <bpmn:documentation>Use this tool in order to send a response to a user who is communicating over slack. Only send messages that you need a reply to. This tools i blocking and wont return a result unless a user responds. So always use it for a question not to give information. 
+        <bpmn:documentation>Use this tool in order to send a response to a user who is communicating over Slack. Only send messages that you need a reply to. This tool is blocking and won't return a result unless a user responds. So always use it for a question not to give information.
 
-Remeber that slack has specific format requirements.
+Remember that Slack has specific format requirements.
 When formatting messages for Slack, use Slack's mrkdwn syntax (NOT standard markdown):
 
 - Bold: *single asterisks* (not **double**)
@@ -123,13 +123,13 @@ Keep messages concise. Slack is a conversational medium, not a document. Prefer 
         <bpmn:extensionElements>
           <zeebe:script expression="=messageForUser" resultVariable="messageForUser" />
           <zeebe:ioMapping>
-            <zeebe:input source="=fromAi(toolCall.messageForUser, &#34;This is the message you want send to the user&#34;)" target="messageForUser" />
+            <zeebe:input source="=fromAi(toolCall.messageForUser, &#34;This is the message you want to send to the user&#34;)" target="messageForUser" />
             <zeebe:output source="=messageForUser" target="messageForUser" />
           </zeebe:ioMapping>
         </bpmn:extensionElements>
         <bpmn:outgoing>Flow_1q345fv</bpmn:outgoing>
       </bpmn:scriptTask>
-      <bpmn:intermediateThrowEvent id="Event_1yaop1k" name="Send Message Send request" zeebe:modelerTemplate="io.camunda.connectors.message.intermediate.v1" zeebe:modelerTemplateVersion="0" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZwogICB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciCiAgIHdpZHRoPSIyMDAwIgogICBoZWlnaHQ9IjIwMDAiCiAgIHZpZXdCb3g9IjAgMCAyMDAwIDIwMDAiCiAgIHByZXNlcnZlQXNwZWN0UmF0aW89InhNaWRZTWlkIj4KICA8cGF0aAogICAgIHN0eWxlPSJjb2xvcjojMDAwMDAwIgogICAgIGQ9Im0gMCwyODQgMjAwMCwwIC0xMDAwLDU1NCB6Ii8+CiAgPHBhdGgKICAgICBzdHlsZT0iY29sb3I6IzAwMDAwMCIKICAgICBkPSJtIDAsNDUyIDEwMDAsNTQ4IDEwMDAsLTU0OCAwLDEwOTYgLTIwMDAsMCB6Ii8+Cjwvc3ZnPgo=">
+      <bpmn:intermediateThrowEvent id="Event_1yaop1k" name="Send Message Request" zeebe:modelerTemplate="io.camunda.connectors.message.intermediate.v1" zeebe:modelerTemplateVersion="0" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZwogICB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciCiAgIHdpZHRoPSIyMDAwIgogICBoZWlnaHQ9IjIwMDAiCiAgIHZpZXdCb3g9IjAgMCAyMDAwIDIwMDAiCiAgIHByZXNlcnZlQXNwZWN0UmF0aW89InhNaWRZTWlkIj4KICA8cGF0aAogICAgIHN0eWxlPSJjb2xvcjojMDAwMDAwIgogICAgIGQ9Im0gMCwyODQgMjAwMCwwIC0xMDAwLDU1NCB6Ii8+CiAgPHBhdGgKICAgICBzdHlsZT0iY29sb3I6IzAwMDAwMCIKICAgICBkPSJtIDAsNDUyIDEwMDAsNTQ4IDEwMDAsLTU0OCAwLDEwOTYgLTIwMDAsMCB6Ii8+Cjwvc3ZnPgo=">
         <bpmn:extensionElements>
           <zeebe:ioMapping>
             <zeebe:input source="MESSAGE_FOR_USER" target="messageName" />
