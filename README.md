@@ -5,6 +5,8 @@ https://raw.githubusercontent.com/NPDeehan/camunda-agent-template/refs/heads/mai
 
 This is a **ready-to-deploy starter template** for building a conversational AI agent hosted on Camunda 8. By the end of this tutorial you will have a working agent that users can talk to directly through the **`CamundaAgentHelper`** Slack bot — no Slack configuration required on your part. If you have never built a Camunda agent before and want a working starting point — this is it.
 
+> **Access required:** This tutorial deploys to the shared **Camunda Slack Agent Org** cluster. If you don't have access yet, ask the `CamundaAgentHelper` Slack bot — it can grant you access directly.
+
 The template ships with:
 
 - Built-in BPMN-native abilities to **wait for a user reply** or **pause for a period of time** before continuing — no custom code required.
@@ -70,7 +72,7 @@ Before starting you will need:
 
 1. Log in to [Camunda Web Modeler](https://modeler.camunda.io).
 2. Click **Create new project** and give it a name.
-3. Inside the project, click **Add file** → **Browse blueprints**. Search for **Camunda Agent Starter** and select it. The BPMN will be added to your project automatically.
+3. Click **Browse blueprints**, search for **Camunda Agent Starter Project**, and select it. Follow the on-screen suggestions to add the blueprint to your project.
 
 ![Choosing the blueprint](img/Choosing%20the%20blueprint.png)
 https://raw.githubusercontent.com/NPDeehan/camunda-agent-template/refs/heads/main/img/Choosing%20the%20blueprint.png
@@ -112,8 +114,9 @@ https://raw.githubusercontent.com/NPDeehan/camunda-agent-template/refs/heads/mai
 Before you can deploy, you need to link your Camunda cluster to the Web Modeler project.
 
 1. Click the **back arrow** to return to the project view (the list of files in your project).
-2. In the right sidebar, click **Connected clusters**.
-3. In the dropdown, select the cluster you want to deploy to.
+2. In the right sidebar, click **Configure cluster**.
+3. Open the **Production** dropdown and select the available cluster option.
+4. Click **Save**.
 
 The cluster is now set as the deployment target for every BPMN in this project.
 
@@ -164,22 +167,17 @@ If something went wrong — for example the agent never replied — Operate will
 
 ## Step 7 — Test it
 
-Before testing, re-deploy the process to pick up all the configuration changes made since Step 4. Open the BPMN in Web Modeler, click the **down arrow** beside the **Deploy and Run** button in the top-right corner, and select **Deploy**.
+In any Slack channel that `CamundaAgentHelper` is in, start a new thread with:
 
-1. In Slack, `@mention` the `CamundaAgentHelper` bot in any channel it is in.
-2. It will scan the cluster for deployed agents. When it finds yours (by the `AGENT` version tag), it will offer to connect you to it — select your agent.
-3. Once connected, send it this message:
+```
+@CamundaAgentHelper Can you check if my agent <your-process-id> is deployed
+```
 
-   ```
-   In 10 seconds can you tell me the current time in Jakarta?
-   ```
+Replace `<your-process-id>` with the process ID you set in Step 2a (e.g. `alice-support-agent`).
 
-   This is an ideal first test because it exercises two built-in tools at once — the timer wait and the current time lookup.
+Switch to the Operate tab you opened in Step 6 — you should see a new instance appear. Click it to watch the token move through the process in real time.
 
-4. Switch to the Operate tab you opened in Step 6 — you should see a new instance appear. Click it to watch the token move through the process in real time.
-5. After 10 seconds you should receive a reply with the Jakarta time in the Slack thread.
-
-If no reply arrives, check that the version tag on your deployed process starts with `AGENT` and that you re-deployed after making any changes. Operate will show any incidents or errors on the failed element.
+If no reply arrives, check that the version tag on your deployed process starts with `AGENT`. Operate will show any incidents or errors on the failed element.
 
 ---
 
@@ -201,7 +199,7 @@ For example, something completely over the top:
 You are Captain Reginald von Timestamps III, a retired 18th-century naval officer 
 who was inexplicably transported to the present day and now works as a timezone 
 assistant. You are deeply suspicious of digital clocks, refer to all time zones 
-as "distant seas", and cannot resist adding a brief nautical anecdote to every 
+as 'distant seas', and cannot resist adding a brief nautical anecdote to every 
 response. You are unfailingly polite but increasingly baffled by modernity.
 ```
 
