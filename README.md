@@ -148,7 +148,21 @@ If you are using your own cluster or the agent cannot reach Bedrock, you need an
 
 ---
 
-## Step 6 — Test it
+## Step 6 — Open Operate so you can watch your process run
+
+Before you trigger the test, open Camunda Operate so you are ready to watch the process in real time as soon as it starts.
+
+1. Go to Camunda Operate and log in to the same cluster you deployed to.
+2. In the left sidebar, click **Processes** and find your process by the name you gave it in Step 2a.
+3. Click on the process to see a list of instances — it will be empty for now, but leave this tab open.
+
+Once a test instance starts (in Step 7), you can click into it and watch the BPMN diagram with a coloured token showing exactly where execution currently is. When the agent is thinking or calling a tool, the token will sit inside the ad-hoc sub-process. You can watch it move through the timer event, the current time script task, and back out again in real time.
+
+If something went wrong — for example the agent never replied — Operate will show you any incidents or error messages on the failed element, which makes debugging straightforward.
+
+---
+
+## Step 7 — Test it
 
 Before testing, re-deploy the process to pick up all the configuration changes made since Step 4. Open the BPMN in Web Modeler, click the **down arrow** beside the **Deploy and Run** button in the top-right corner, and select **Deploy**.
 
@@ -162,23 +176,10 @@ Before testing, re-deploy the process to pick up all the configuration changes m
 
    This is an ideal first test because it exercises two built-in tools at once — the timer wait and the current time lookup.
 
-4. After 10 seconds you should receive a reply with the Jakarta time in the Slack thread.
+4. Switch to the Operate tab you opened in Step 6 — you should see a new instance appear. Click it to watch the token move through the process in real time.
+5. After 10 seconds you should receive a reply with the Jakarta time in the Slack thread.
 
-If no reply arrives, check that the version tag on your deployed process starts with `AGENT` and that you re-deployed after making any changes. Then move on to Step 7 to inspect what happened inside the process.
-
----
-
-## Step 7 — Watch your process run in Operate
-
-While your agent is running (or after it completes), you can watch exactly what it is doing inside Camunda Operate. This is one of the most useful things about building agents on Camunda — you get full visibility into every step the agent takes.
-
-1. Go to Camunda Operate and log in to the same cluster you deployed to.
-2. In the left sidebar, click **Processes** and find your process by the name you gave it in Step 2a.
-3. Click on the process to see a list of instances. Click the running (or most recent) instance.
-
-You will see the BPMN diagram with a coloured token showing exactly where execution currently is. When the agent is thinking or calling a tool, the token will sit inside the ad-hoc sub-process. You can watch it move through the timer event, the current time script task, and back out again in real time.
-
-If something went wrong — for example the agent never replied — Operate will show you any incidents or error messages on the failed element, which makes debugging straightforward.
+If no reply arrives, check that the version tag on your deployed process starts with `AGENT` and that you re-deployed after making any changes. Operate will show any incidents or errors on the failed element.
 
 ---
 
