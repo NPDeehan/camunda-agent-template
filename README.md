@@ -10,10 +10,47 @@ This is a **ready-to-deploy starter template** for building a conversational AI 
 The template ships with:
 
 - Built-in BPMN-native abilities to **wait for a user reply** or **pause for a period of time** before continuing — no custom code required.
-- An **AI agent** backed by Claude Sonnet 4.6 on AWS Bedrock, wired up inside an ad-hoc sub-process.
+- An **AI agent** backed by Claude Sonnet 5 through the Anthropic API, built on Camunda's **AI Agent Sub-process** connector (the 8.10 `v2` element template) and wired up inside an ad-hoc sub-process.
 - **Automatic discovery** — once deployed with the correct version tag, the agent is visible to the [Camunda Agent Routing Process](https://github.com/NPDeehan/Camunda-Agent-Routing-Process) and can be called by users immediately via `CamundaAgentHelper`.
 
 You replace the sample domain logic with your own, keep what you need, and delete the rest.
+
+---
+
+## What's new in version 3
+
+Version 3 of the template (`Camunda Agent Builder Template V3.bpmn`) replaces version 2. The main change is that the agent element now uses Camunda 8.10's **new AI Agent Sub-process element template**, in place of the legacy one.
+
+### Agent template update
+
+Camunda 8.10 introduced new (`v2`) element templates for the AI Agent Task and AI Agent Sub-process connectors, and [deprecated the legacy templates](https://docs.camunda.io/docs/reference/announcements-release-notes/8100/8100-announcements/#agentic-orchestration). The legacy templates still work, but they get no new provider capabilities. The new templates run on new job types and use each model provider's native SDK.
+
+| | Version 2 | Version 3 |
+|---|---|---|
+| Element template | AI Agent Sub-process (legacy): `io.camunda.connectors.agenticai.aiagent.jobworker.v1` | AI Agent Sub-process (new): `io.camunda.connectors.agenticai.ai-agent-subprocess.v2` |
+| Job type | `io.camunda.agenticai:aiagent-job-worker:1` | `io.camunda.agenticai:aiagent:subprocess:2` |
+| Model provider | AWS Bedrock | Anthropic (Anthropic API backend) |
+| Model | `us.anthropic.claude-sonnet-4-6` | `claude-sonnet-5` |
+| Credentials | `AWS_REGION`, `AWS_ACCESS_KEY`, `AWS_SECRET_KEY` | One secret: `ANTHROPIC_KEY` |
+| Effort / thinking | Not available | Exposed (both set to the model default) |
+| Prompt caching | Not available | Enabled |
+| Process ID | `Camunda-Agent-Template` | `Camunda-Data-Agent` |
+| Cluster version | 8.9+ | **8.10+** |
+
+What this means in practice:
+
+- **Provider and backend are now separate choices.** You pick the *provider* (the wire format, e.g. Anthropic) and then a *backend* (where it is served). For Claude, the backends are the Anthropic API, AWS Bedrock Mantle, Microsoft Foundry, or a custom/compatible endpoint. See [AI Agent model providers](https://docs.camunda.io/docs/components/connectors/out-of-the-box-connectors/agentic-ai-aiagent-model-providers/#anthropic).
+- **Anthropic-specific settings are available.** The new template exposes **Effort**, **Thinking mode** and **Enable prompt caching**. Version 3 leaves effort and thinking on the model default and turns prompt caching on.
+- **The element is marked as an agent.** The template adds a `zeebe:agentDefinition` extension element, so Camunda recognises it as an [agent definition](https://docs.camunda.io/docs/components/agentic-orchestration/agent-definitions-and-instances/). This is what powers agent visibility and monitoring in 8.10.
+- **Better tool modelling support.** The sub-process is marked as a tool container (`io.camunda.agenticai.toolContainer`), which turns on the Modeler's agent tool linting, autofill and **Fix** suggestions for the tools you add. Each tool result also records a `completedAt` timestamp.
+- **Retry backoff** on the agent element is now 30 seconds (`PT30S`) instead of none.
+- **Same agent behaviour.** The AI Agent Sub-process still handles the agent loop and tool resolution for you, so the tools in the ad-hoc sub-process (time, wait, message the user) work as before. The system prompt is essentially unchanged.
+
+### Already running version 2, or have your own legacy agent?
+
+Existing deployments keep running on the legacy job worker until you deploy a new version of the process with the new template. Migration is a manual, per-element change. You can do it with `c8ctl element-template update` (c8ctl 4.6.1 or later), or in Modeler by selecting the element, choosing **Change element** and applying the new template. Either way, deploy to a non-production environment first. Full steps are in [Upgrade AI Agent element templates](https://docs.camunda.io/docs/components/connectors/out-of-the-box-connectors/agentic-ai-aiagent-upgrade/).
+
+If you are starting fresh, you don't need to migrate anything: just follow the steps below.
 
 ---
 
@@ -35,7 +72,7 @@ Routing agent calls your process as a child, passing the user's question
         ▼
 ┌───────────────────────────────────────────┐
 │  AI Agent (ad-hoc sub-process)            │
-│  Model: Claude Sonnet 4.6 on Bedrock      │
+│  Model: Claude Sonnet 5 (Anthropic API)   │
 │                                           │
 │  Available tools:                         │
 │  ├─ Send message to user (via routing)    │
@@ -59,9 +96,9 @@ Routing agent posts to Slack thread → waits for reply → returns SendResponse
 
 Before starting you will need:
 
-- A **Camunda 8 SaaS** account with a cluster on **version 8.9 or later**.
+- A **Camunda 8 SaaS** account with a cluster on **version 8.10 or later** (required for the new AI Agent element templates).
   Sign up at [camunda.com](https://camunda.com) if you do not have one. (If you're a Camundi, you don't need to do this — we already have a cluster for you and you can ask to be invited.)
-- An **AWS account** with Amazon Bedrock enabled and access to the model `us.anthropic.claude-sonnet-4-6` in your chosen region.
+- An **Anthropic API key** with access to the `claude-sonnet-5` model. Create one in the [Anthropic Console](https://console.anthropic.com/).
   *(May not be needed if you are using a Camunda-provided development cluster — see Step 5.)*
 - The **[Camunda Agent Routing Process](https://github.com/NPDeehan/Camunda-Agent-Routing-Process)** deployed on the same cluster — this handles all Slack communication and agent discovery on behalf of your agent.
   🤖 If you're a Camundi building on the shared development cluster, this is already running. You don't need to set it up.
@@ -89,7 +126,7 @@ Once the BPMN is loaded, make these three changes in Web Modeler before doing an
 2. In the properties panel (named **Details**), update **Name** to something descriptive and unique, e.g. `Alice's Support Agent`.
 3. Update **ID** to a unique identifier using only letters, numbers, and hyphens, e.g. `alice-support-agent`.
 
-If two people deploy this template to the same cluster with the default ID `Camunda-Agent-Template`, their deployments will overwrite each other.
+If two people deploy this template to the same cluster with the default ID `Camunda-Data-Agent`, their deployments will overwrite each other.
 
 ### 2b. Update the Version Tag
 
@@ -127,27 +164,27 @@ https://raw.githubusercontent.com/NPDeehan/camunda-agent-template/refs/heads/mai
 
 ## Step 4 — Deploy the process
 
-1. Open `Camunda Agent Builder Template V2.bpmn` in Web Modeler.
+1. Open `Camunda Agent Builder Template V3.bpmn` in Web Modeler.
 2. In the top-right corner you will see a **Deploy and Run** button — do **not** click this directly. Instead, click the **down arrow** beside it and select **Deploy** from the dropdown.
 
-> **Expected warnings:** You may see warnings about secrets that do not exist yet (`AWS_…`). This is normal — the secrets will be added in the next step. The deployment will still succeed.
+> **Expected warnings:** You may see warnings about a secret that does not exist yet (`ANTHROPIC_KEY`). This is normal — the secret will be added in the next step. The deployment will still succeed.
 
 ---
 
-## Step 5 — Configure AWS credentials *(skip if you have been given access to a demo cluster)*
+## Step 5 — Configure the Anthropic API key *(skip if you have been given access to a demo cluster)*
 
-> **Using a Camunda-provided development cluster?** Dev clusters often come with Bedrock model access pre-configured at the cluster level. Try running the agent first — if it fails to invoke the model, come back here and add the AWS secrets manually.
+> **Using a Camunda-provided development cluster?** Dev clusters often come with the model key pre-configured at the cluster level. Try running the agent first — if it fails to invoke the model, come back here and add the secret manually.
 
 🤖 Not needed if you're using the Camunda Bot — it's already set up.
 
-If you are using your own cluster or the agent cannot reach Bedrock, you need an IAM user or role with `bedrock:InvokeModel` permission on `us.anthropic.claude-sonnet-4-6`. See the AWS guide [Creating IAM users](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users_create.html) if you need to create one (choose **Application running outside AWS** as the use case).
+If you are using your own cluster or the agent cannot reach the model, create a connector secret holding your Anthropic API key. The agent reads it with the expression `camunda.secrets.ANTHROPIC_KEY`.
 
-> **Add to your Camunda cluster** — Log in to [Camunda Console](https://console.camunda.io) → your cluster → **Secrets** tab → **Create new secret**. Create all three:
-> - **Name:** `AWS_REGION` — **Value:** your Bedrock-enabled region, e.g. `us-east-1`
-> - **Name:** `AWS_ACCESS_KEY` — **Value:** the IAM access key id
-> - **Name:** `AWS_SECRET_KEY` — **Value:** the IAM secret access key
+> **Add to your Camunda cluster** — Log in to [Camunda Console](https://console.camunda.io) → your cluster → **Secrets** tab → **Create new secret**:
+> - **Name:** `ANTHROPIC_KEY` — **Value:** your Anthropic API key
 >
-> 🤖 Camunda employees: ask the Camunda Slack bot to create these secrets in the cluster for you.
+> 🤖 Camunda employees: ask the Camunda Slack bot to create this secret in the cluster for you.
+
+Prefer to run Claude through AWS Bedrock or Microsoft Foundry instead? Change the **Backend** on the AI Agent element — see [Change the model](#change-the-model).
 
 ---
 
@@ -313,7 +350,12 @@ Any BPMN element inside the ad-hoc sub-process is a potential tool. Add a new se
 
 ### Change the model
 
-The AI Agent task currently points at `us.anthropic.claude-sonnet-4-6` on AWS Bedrock. You can change this to any other Bedrock model, or switch the provider entirely to OpenAI, Anthropic direct, or Azure OpenAI by changing the **Provider type** input on the same task.
+The AI Agent Sub-process currently uses the **Anthropic** provider with the **Anthropic API** backend and the model `claude-sonnet-5`. Select the **AI Agent (ad-hoc sub-process)** element and open the **Model provider** section of the properties panel to change it:
+
+- **Different Claude model:** edit the **Model** field.
+- **Claude through another backend:** keep the **Anthropic** provider and change **Backend** to *AWS Bedrock Mantle*, *Microsoft Foundry (Azure)* or *Custom / compatible endpoint*. This keeps the Anthropic-specific settings (effort, thinking, prompt caching). Note that Bedrock Mantle needs a different IAM policy to Bedrock Runtime.
+- **Tune reasoning and cost:** adjust **Effort**, **Thinking mode** and **Enable prompt caching** in the model parameters.
+- **A different provider entirely:** choose OpenAI, Google Gemini, AWS Bedrock Converse, Mistral AI or a custom provider. See [AI Agent model providers](https://docs.camunda.io/docs/components/connectors/out-of-the-box-connectors/agentic-ai-aiagent-model-providers/).
 
 ---
 
@@ -321,4 +363,4 @@ The AI Agent task currently points at `us.anthropic.claude-sonnet-4-6` on AWS Be
 
 | File | Purpose |
 |------|---------|
-| `Camunda Agent Builder Template V2.bpmn` | The main process definition — AI agent, timer events, message handling, and conversation flow. |
+| `Camunda Agent Builder Template V3.bpmn` | The main process definition — AI Agent Sub-process (8.10 `v2` template), timer events, message handling, and conversation flow. Replaces V2. |
